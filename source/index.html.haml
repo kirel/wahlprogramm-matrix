@@ -15,20 +15,6 @@
 - score_classes_fn = lambda { |p| all_docs.map { |doc| [doc, dist[p.id][doc.id]] }.select { |(doc, d)| d.is_a?(Numeric) && d > min }.map { |(doc, d)| [doc, quantize[d]] }.map { |(doc, d)| "dist-#{doc.id.gsub('.','')}-#{d}" } }
 - sass_doc_list = all_docs.map(&:id).map { |id| id.gsub('.','') }.map(&:inspect).join(', ')
 
-
-
-:sass
-	$docs: #{sass_doc_list}
-	$distLevels: 10
-	@each $doc in $docs
-		.doc-\#{$doc}-selected
-			@for $level from 0 to $distLevels
-				.doc.dist-\#{$doc}-\#{$level}
-					background-color: rgba(255, 0, 0, (1-$level/$distLevels)/2)
-				a.dist-\#{$doc}-\#{$level}
-					background-color: rgba(255, 0, 0, 1-$level/$distLevels)
-
-
 %article
 	.menu-container
 		.menu
@@ -311,3 +297,14 @@
 -# 	© 2016 ida lab
 -# 	%img{:alt => "idalab", :src => "images/logo.png", :class => "footer__logo"}
 -# 	%a{:href => "", :class => "footer__impressum-link"}
+
+:sass
+	$docs: #{sass_doc_list}
+	$distLevels: 10
+	@each $doc in $docs
+		.doc-\#{$doc}-selected
+			@for $level from 0 to $distLevels
+				.doc.dist-\#{$doc}-\#{$level}
+					background-color: rgba(255, 0, 0, (1-$level/$distLevels)/2)
+				a.dist-\#{$doc}-\#{$level}
+					background-color: rgba(255, 0, 0, 1-$level/$distLevels)
