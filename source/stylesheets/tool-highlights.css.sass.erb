@@ -1,0 +1,27 @@
+<%
+numbers = %w[zero one two three four five six seven]
+dist = data.distances
+estimator = Quantile::Estimator.new
+dist.each { |_,v| v.each { |_,v| estimator.observe(v) } }
+agendas = data.documents
+all_docs = agendas.map(&:last).reduce(:+)
+min = estimator.query(0.95)
+max = estimator.query(1)
+outlier = estimator.query(0.4)
+# map the interval [min, max] to clamped [1, 0] interval and then quantize to ten distance levels
+quantize = lambda { |d| ([[(max-d)/(max-min), 0].max, 1].min*10).round }
+is_outlier = lambda { |doc| (data.distances[doc.id][:avg] || 1) < outlier }
+closest = data.closest
+score_classes_fn = lambda { |p| all_docs.map { |doc| [doc, dist[p.id][doc.id]] }.select { |(doc, d)| d.is_a?(Numeric) && d > min }.map { |(doc, d)| [doc, quantize[d]] }.map { |(doc, d)| "dist-#{doc.id.gsub('.','')}-#{d}" } }
+sass_doc_list = all_docs.map(&:id).map { |id| id.gsub('.','') }.map(&:inspect).join(', ')
+%>
+
+$docs: <%= sass_doc_list.to_s %>
+$distLevels: 10
+@each $doc in $docs
+  .doc-#{$doc}-selected
+    @for $level from 0 to $distLevels
+      .doc.dist-#{$doc}-#{$level}
+        background-color: rgba(255, 0, 0, (1-$level/$distLevels)/2)
+      a.dist-#{$doc}-#{$level}
+        background-color: rgba(255, 0, 0, 1-$level/$distLevels)

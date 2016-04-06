@@ -13,7 +13,6 @@
 - # closest = { "d1p0": ["d1p2", "d2p34", ...] }
 - closest = data.closest
 - score_classes_fn = lambda { |p| all_docs.map { |doc| [doc, dist[p.id][doc.id]] }.select { |(doc, d)| d.is_a?(Numeric) && d > min }.map { |(doc, d)| [doc, quantize[d]] }.map { |(doc, d)| "dist-#{doc.id.gsub('.','')}-#{d}" } }
-- sass_doc_list = all_docs.map(&:id).map { |id| id.gsub('.','') }.map(&:inspect).join(', ')
 
 %article
 	.menu-container
@@ -28,7 +27,8 @@
 	.rider
 		%h1.rider__main-title Wer ist eigentlich die AfD?
 		%h2.rider__sub-title Ein Denkanstoß auf Basis von Data Science
-		%img{:alt => "idalab", :src => "images/logo.png", :class => "rider__logo"}
+		%a(href="http://www.idalab.de")
+			%img{:alt => "idalab", :src => "images/logo.png", :class => "rider__logo"}
 
 	#article-container
 		%p Der erste Entwurf des Parteiprogramms der “Alternative für Deutschland” ist vorgelegt. Wo liegen die programmatischen Unterschiede zu den anderen deutschen Parteien? Ist die AfD wirklich eine “Alternative” für Deutschland?
@@ -292,19 +292,3 @@
 							- closest_to_paragraph = closest[p.id].select {|h| h.dist > min }.map {|h| "##{h.doc }" } - ["##{p.id}"]
 							.doc{id: "#{p.id.gsub('.','')}", class: classes, data: {click: "doc-#{p.id.gsub('.','')}-selected", closest: closest_to_paragraph}}
 								= GitHub::Markdown.render p.text
-
--# .footer
--# 	© 2016 ida lab
--# 	%img{:alt => "idalab", :src => "images/logo.png", :class => "footer__logo"}
--# 	%a{:href => "", :class => "footer__impressum-link"}
-
-:sass
-	$docs: #{sass_doc_list}
-	$distLevels: 10
-	@each $doc in $docs
-		.doc-\#{$doc}-selected
-			@for $level from 0 to $distLevels
-				.doc.dist-\#{$doc}-\#{$level}
-					background-color: rgba(255, 0, 0, (1-$level/$distLevels)/2)
-				a.dist-\#{$doc}-\#{$level}
-					background-color: rgba(255, 0, 0, 1-$level/$distLevels)
