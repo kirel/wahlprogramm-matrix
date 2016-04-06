@@ -62,7 +62,7 @@ activateParagraph = (p) ->
 
 scrollToClosest = (p) ->
 	$(p).data('closest').forEach scrollToParagraph
-	history.pushState({}, '', "/#" + [$(p).attr('id')].concat($(p).data('closest').map((id) -> id.substr(1))).join('+'))
+	history.pushState({}, '', "#" + [$(p).attr('id')].concat($(p).data('closest').map((id) -> id.substr(1))).join('+'))
 
 $(document).on 'click', '[data-click]', ->
 	scrollToTool()
@@ -128,7 +128,7 @@ $ ->
 	$('a.jump-to-paragraph').click((e) ->
 		e.preventDefault()
 		scrollToParagraph($(@).data('target'))
-		history.pushState({}, '', '/'+$(@).data('target'))
+		history.pushState({}, '', ''+$(@).data('target'))
 		# TODO scroll other parties max dist
 	)
 	$(document).on 'touchmove', '.minimap', (e) ->
