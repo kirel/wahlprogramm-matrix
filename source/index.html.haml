@@ -1,26 +1,10 @@
-- numbers = %w[zero one two three four five six seven]
-- dist = data.distances
-- estimator = Quantile::Estimator.new
-- dist.each { |_,v| v.each { |_,v| estimator.observe(v) } }
-- agendas = data.documents
-- all_docs = agendas.map(&:last).reduce(:+)
-- min = estimator.query(0.95)
-- max = estimator.query(1)
-- outlier = estimator.query(0.4)
-- # map the interval [min, max] to clamped [1, 0] interval and then quantize to ten distance levels
-- quantize = lambda { |d| ([[(max-d)/(max-min), 0].max, 1].min*10).round }
-- is_outlier = lambda { |doc| (data.distances[doc.id][:avg] || 1) < outlier }
-- # closest = { "d1p0": ["d1p2", "d2p34", ...] }
-- closest = data.closest
-- score_classes_fn = lambda { |p| all_docs.map { |doc| [doc, dist[p.id][doc.id]] }.select { |(doc, d)| d.is_a?(Numeric) && d > min }.map { |(doc, d)| [doc, quantize[d]] }.map { |(doc, d)| "dist-#{doc.id.gsub('.','')}-#{d}" } }
-
 %article
 	.menu-container
 		.menu
 			%a.smooth-scroll.menu__left{:href => "#analyse"} Analyse
 			%a.smooth-scroll.menu__left{:href => "#hypothesen"} Hypothesen
 			%a.smooth-scroll.menu__left{:href => "#project"} Über das Projekt
-			%a.smooth-scroll.menu-button.menu__right{:href => "#wrapper"}
+			%a.smooth-scroll.menu-button.menu__right{:href => "#tool-container"}
 				%img{:src => 'images/arrow.png'}
 				Zum Vergleich
 
@@ -170,7 +154,7 @@
 		%p Die dargestellten Auszüge der ähnlichen Abschnitte aus den Parteiprogrammen sind nur ein Auszug und als solcher natürlich immer mit Vorsicht zu genießen. Die Analyse beruht auf dem jeweils aktuell gültigen Parteiprogramm der CDU, SPD, Grünen, FDP, LINKE, NPD und AfD. Da es oft schwierig ist, eine ganze Partei hinter einem Grundsatzprogramm zu vereinigen, sind diese Dokumente teilweise älterer Natur. Das Programm der CDU stammt beispielsweise aus dem Jahr 2007, das der Grünen aus dem Jahr 2002.
 		%p Um die Ähnlichkeit politischer Aussagen aus den Parteiprogrammen zu bestimmen, haben wir eine robuste datengetriebene Methodik entwickelt. So können sämtliche Passagen, die eine inhaltliche Ähnlichkeit aufzeigen, schnell identifiziert werden. Dies gilt für Ähnlichkeiten zwischen allen Parteien. Sie können sich also selbst ein Bild verschaffen und weitere spannende Parallelen entdecken. (großer Bildschirm hilfreich):
 		%p.link-to-tool-container
-			%a.smooth-scroll.link-to-tool{:href => "#wrapper", :class => "button"} Zum Vergleichstool
+			%a.smooth-scroll.link-to-tool{:href => "#tool-container", :class => "button"} Zum Vergleichstool
 
 		%h3#analyse Jetzt mal Klartext: Ist die AfD wirklich so ähnlich zu anderen Parteien?
 		%p Es gibt offensichtlich sehr ähnliche Passagen. Unsere Analyse zeigt, dass sich politische Aussagen nicht eindeutig ihrem parteipolitischen Ursprung zuordnen lassen. Insbesondere bei einer Partei wie der AfD, die eine neue politische Heimat für ehemalige Mitglieder von Parteien aus dem gesamten Spektrum ist, ist es wenig verwunderlich, dass sich diverse Ideen anderer Parteien auch im AfD-Parteiprogramm wiederfinden.
@@ -270,25 +254,5 @@
 	%h2 Ups, doch nicht!
 	%h3 Das Vergleichstool ist nur für Bildschirme mit einer Mindestbreite von 600px optimiert. Bitte kehren Sie mit Ihrem Laptop oder Tablet zurück.
 
-#wrapper
-	#container{class: numbers[agendas.keys.size]}
-		- agendas.each_with_index do |(title, paragraphs), i|
-			.sub-container{class: title.downcase}
-				.minimap{class: numbers[i+1]}
-					.scroll-indicator(draggable="true")
-					- paragraphs.each do |p|
-						- classes = score_classes_fn[p]
-						- classes << 'outlier' if is_outlier[p]
-						- classes << 'jump-to-paragraph'
-						%a{href: "##{p.id.gsub('.','')}", "data-target" => "##{p.id.gsub('.','')}", style: "height: #{100.0*p.text.length/paragraphs.map(&:text).map(&:length).reduce(:+)}%", class: classes, :"data-important" => data.important[p.id].keys.join(', ')}
-				.sub-container-title-bar.party-name
-					%h1= title
-				.scroll-container
-					.wrapper
-						%h1.party-name= title
-						- paragraphs.each do |p|
-							- classes = score_classes_fn[p]
-							- classes << 'outlier' if is_outlier[p]
-							- closest_to_paragraph = closest[p.id].select {|h| h.dist > min }.map {|h| "##{h.doc }" } - ["##{p.id}"]
-							.doc{id: "#{p.id.gsub('.','')}", class: classes, data: {click: "doc-#{p.id.gsub('.','')}-selected", closest: closest_to_paragraph}}
-								= GitHub::Markdown.render p.text
+#tool-container
+	%iframe(src="./tool.html")

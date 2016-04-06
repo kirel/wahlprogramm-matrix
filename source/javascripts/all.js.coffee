@@ -5,7 +5,7 @@
 $(document).ready ->
 	initializeSlick()
 	initializeSmoothScrolling()
-	initializeFixedMenu()
+	initializeFixedMenu() if $('.menu-container').length
 	return
 
 initializeSmoothScrolling = ->
@@ -15,7 +15,6 @@ initializeSmoothScrolling = ->
 
 initializeFixedMenu = ->
 	navpos = $('.menu-container').offset()
-	console.log navpos.top
 	$(window).bind 'scroll', ->
 		if $(window).scrollTop() > navpos.top
 			$('.menu-container').addClass 'menu-container-fixed-top'
@@ -34,11 +33,14 @@ initializeSlick = () ->
 		$('.slider').slick
 			adaptiveHeight: false
 
-scrollToTool = () ->
-	return if $('body').scrollTop() == $('#container').position().top
-	$('body').animate({
-		scrollTop: $('#container').position().top
-		}, 500)
+window.scrollToTool = () ->
+	if $('#tool-container').length
+		return if $('body').scrollTop() == $('#tool-container').position().top
+		$('body').animate({
+			scrollTop: $('#tool-container').position().top
+			}, 500)
+	else
+		parent.scrollToTool()
 
 scrollToParagraph = (elem) ->
 	$(elem).closest('.scroll-container').animate({
