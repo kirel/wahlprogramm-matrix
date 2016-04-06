@@ -2,6 +2,16 @@
 #= require_tree .
 #= require_self
 
+`
+function inIframe () {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
+`
+
 $(document).ready ->
 	initializeSlick()
 	initializeSmoothScrolling()
@@ -39,7 +49,7 @@ window.scrollToTool = () ->
 		$('body').animate({
 			scrollTop: $('#tool-container').position().top
 			}, 500)
-	else
+	else if inIframe()
 		parent.scrollToTool()
 
 scrollToParagraph = (elem) ->
