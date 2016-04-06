@@ -8,13 +8,25 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 		<!-- Use title if it's in the page YAML frontmatter -->
-		<title><%= current_page.data.title || "AFD Analyse" %></title>
+		<title><%= current_page.data.title || "AfD Analyse" %></title>
 
 		<link rel="icon" type="image/ico" href="favicon.ico" />
 
 		<%= stylesheet_link_tag "normalize", "all" %>
-		<meta property="og:image" content="images/fb-image.png" />
-		<meta property="og:title" content="AFD Analyse" />
+		<%= stylesheet_link_tag "tool-highlights" %>
+		<meta property="og:image" content="http://www.idalab.de/afd-analyse/images/fb-image.png" />
+		<meta property="og:title" content="AfD Analyse" />
+		<meta name="description" content="Eine Analyse des AfD-Parteiprogramms auf Basis von Data Science." />
+
+		<!-- Twitter Card data -->
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:title" content="AfD-Analyse">
+		<meta name="twitter:description" content="Eine Analyse des AfD-Parteiprogramms auf Basis von Data Science.">
+
+		<!-- Open Graph data -->
+		<meta property="og:title" content="AfD-Analyse" />
+		<meta property="og:type" content="article" />
+		<meta property="og:description" content="Eine Analyse des AfD-Parteiprogramms auf Basis von Data Science." />
 	</head>
 
 	<body class="<%= page_classes %>">
