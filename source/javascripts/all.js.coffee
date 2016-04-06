@@ -59,11 +59,15 @@ scrollToParagraph = (elem) ->
 
 parseHash = ->
 	return unless window.location.hash
-	elements = window.location.hash[1..].split('+').map (e) -> "##{e}"
-	if elements.length
+	embeddedTool = $('#tool-container iframe')
+	if embeddedTool.length
 		scrollToTool()
-		elements.forEach scrollToParagraph
-		activateParagraph(elements[0])
+		embeddedTool.attr(src: 'tool.html'+window.location.hash)
+	else
+		elements = window.location.hash[1..].split('+').map (e) -> "##{e}"
+		if elements.length
+			elements.forEach scrollToParagraph
+			activateParagraph(elements[0])
 
 activateParagraph = (p) ->
 	$wrapper = $('#wrapper')
@@ -72,9 +76,15 @@ activateParagraph = (p) ->
 	else
 		$wrapper.removeClass().addClass($(p).data('click')).addClass('selected')
 
-scrollToClosest = (p) ->
+window.scrollToClosest = (p) ->
 	$(p).data('closest').forEach scrollToParagraph
-	history.pushState({}, '', "#" + [$(p).attr('id')].concat($(p).data('closest').map((id) -> id.substr(1))).join('+'))
+	unless inIframe()
+		history.pushState({}, '', "#" + [$(p).attr('id')].concat($(p).data('closest').map((id) -> id.substr(1))).join('+'))
+	else
+		parent.updateUrl("#" + [$(p).attr('id')].concat($(p).data('closest').map((id) -> id.substr(1))).join('+'))
+
+window.updateUrl = (url) ->
+	history.pushState({}, '', url)
 
 $(document).on 'click', '[data-click]', ->
 	scrollToTool()
@@ -140,8 +150,10 @@ $ ->
 	$('a.jump-to-paragraph').click((e) ->
 		e.preventDefault()
 		scrollToParagraph($(@).data('target'))
-		history.pushState({}, '', ''+$(@).data('target'))
-		# TODO scroll other parties max dist
+		unless inIframe()
+			history.pushState({}, '', ''+$(@).data('target'))
+		else
+			parent.updateUrl(''+$(@).data('target'))
 	)
 	$(document).on 'touchmove', '.minimap', (e) ->
 		e.preventDefault()
@@ -160,7 +172,6 @@ $ ->
 		scrollcontainer.scrollTop(scrollPercentage/100*contentHeight)
 
 	$(window).on('hashchange', (e) ->
-		console.log "onhashchange"
 		parseHash()
 		e.preventDefault()
 		)
