@@ -84,3 +84,5 @@ end
 
 activate :relative_assets
 set :relative_links, true
+
+ignore 'newsletter.html'
